@@ -12,14 +12,14 @@ import UserNotificationsUI
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate{
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate,  MessagingDelegate{
 
     var window: UIWindow?
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
+        Messaging.messaging().delegate = self
         FirebaseApp.configure()
         
         if #available(iOS 10.0, *) {
@@ -38,11 +38,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         application.registerForRemoteNotifications()
         
-        if let token = InstanceID.instanceID().token() {
-            print("偷肯Token: \(token)")
+        InstanceID.instanceID().instanceID { (result, error) in
+            if let error = error {
+                print("Error fetching remote instange ID: \(error)")
+            } else if let result = result {
+                print("Remote instance ID token偷偷肯肯: \(result.token)")
+            }
         }
-        
+//
+//        if let token = InstanceID.instanceID().token() {
+//            print("偷肯Token: \(token)")
+//        }
+//
         return true
+    }
+    //MARK: - oh I should go see what that's about
+    //當用戶點擊你所發送的通知時，將會開啟此app
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        print("==========用戶點擊了通知==========")
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
